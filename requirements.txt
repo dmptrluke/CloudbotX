@@ -1,0 +1,6 @@
+# Redis - for storing data
+redis
+# Requests - used whenever accessing web
+requests
+# psutils - for process information
+psutil
