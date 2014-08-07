@@ -7,7 +7,7 @@ import re
 from obrbot import hook
 from obrbot.event import EventType
 
-logger = logging.getLogger("obrbot")
+logger = logging.getLogger('obrbot')
 
 nick_re = re.compile(":(.+?)!")
 
@@ -45,9 +45,9 @@ def on_join(conn, chan, nick):
 @hook.irc_raw("NICK")
 def on_nick(conn, irc_raw, content):
     """
-    :type irc_paramlist: list[str]
     :type conn: obrbot.client.Client
     :type irc_raw: str
+    :type content: str
     """
     old_nick = nick_re.search(irc_raw).group(1)
     if old_nick == conn.nick:
