@@ -5,7 +5,7 @@ import collections
 from obrbot.event import EventType
 from obrbot.plugin import HookType
 
-valid_command_re = re.compile(r"^\w+$")
+valid_command_re = re.compile(r"^[\w-]+$")
 
 
 class _Hook():
