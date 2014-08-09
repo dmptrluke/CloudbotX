@@ -7,7 +7,6 @@ import gc
 
 import redis
 
-import obrbot
 from obrbot.connection import Connection
 from obrbot.config import Config
 from obrbot.plugin import PluginManager
@@ -53,12 +52,6 @@ class ObrBot:
         self.config = Config(self)
         logger.debug("Config system initialised.")
 
-        # log developer mode
-        if obrbot.dev_mode.get("console_debug"):
-            logger.info("Enabling console debug.")
-        if obrbot.dev_mode.get("file_debug"):
-            logger.info("Enabling file debug")
-
         # setup db
         db_config = self.config.get('database')
         db_host = db_config.get('host', 'localhost')
@@ -100,9 +93,9 @@ class ObrBot:
             server = config['connection']['server']
             port = config['connection'].get('port', 6667)
 
-            self.connections.append(IrcConnection(self, name, nick, config=config, channels=config.get('channels', []),
-                                              readable_name=readable_name, server=server, port=port,
-                                              use_ssl=config['connection'].get('ssl', False)))
+            self.connections.append(IrcConnection(self, name, nick, config=config, readable_name=readable_name,
+                                                  server=server, port=port,
+                                                  use_ssl=config['connection'].get('ssl', False)))
             logger.debug("[{}] Created connection.".format(readable_name))
 
     @asyncio.coroutine
@@ -186,10 +179,12 @@ class ObrBot:
 
         if event.type is EventType.message:
             # Commands
-            if event.chan.lower() == event.nick.lower():  # private message, no command prefix
-                command_re = r'(?i)^(?:[{}]?|{}[,;:]+\s+)([\w-]+)(?:$|\s+)(.*)'.format(command_prefix, event.conn.nick)
+            if event.chan_name.lower() == event.nick.lower():  # private message, no command prefix
+                command_re = r'(?i)^(?:[{}]?|{}[,;:]+\s+)([\w-]+)(?:$|\s+)(.*)'.format(command_prefix,
+                                                                                       event.conn.bot_nick)
             else:
-                command_re = r'(?i)^(?:[{}]|{}[,;:]+\s+)([\w-]+)(?:$|\s+)(.*)'.format(command_prefix, event.conn.nick)
+                command_re = r'(?i)^(?:[{}]|{}[,;:]+\s+)([\w-]+)(?:$|\s+)(.*)'.format(command_prefix,
+                                                                                      event.conn.bot_nick)
 
             match = re.match(command_re, event.content)
 
