@@ -8,7 +8,7 @@ import obrbot
 @asyncio.coroutine
 @hook.regex(r'^\x01VERSION\x01$')
 def ctcp_version(notice):
-    notice("\x01VERSION: Obr v{}".format(obrbot.__version__))
+    notice("\x01VERSION: Obr v{} - https://github.com/obrbot/bot-clean".format(obrbot.__version__))
 
 
 @asyncio.coroutine
