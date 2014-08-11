@@ -6,6 +6,7 @@ from datetime import timedelta
 import psutil
 
 from obrbot import hook
+import obrbot
 
 
 def format_bytes(num):
@@ -54,4 +55,15 @@ def system():
         thread_count,
         cpu_usage,
         memory_usage,
+    )
+
+
+@hook.command(autohelp=False)
+def about():
+    return (
+        "Hi, I'm obrbot version {}\n"
+        "I'm maintained and created by Dabo\n"
+        "My backend is powered by redis!\n"
+    ).format(
+        obrbot.__version__
     )
