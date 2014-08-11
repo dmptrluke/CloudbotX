@@ -59,11 +59,10 @@ def system():
 
 
 @hook.command(autohelp=False)
-def about():
-    return (
-        "Hi, I'm obrbot version {}\n"
-        "I'm maintained and created by Dabo\n"
-        "My backend is powered by redis!\n"
-    ).format(
-        obrbot.__version__
-    )
+def about(event):
+    """Gives information about obrbot
+    :type event: obrbot.event.Event
+    """
+    event.message("Hi, I'm obrbot version {}".format(obrbot.__version__),
+                  "I'm maintained and created by Dabo",
+                  "My backend is powered by redis!")
