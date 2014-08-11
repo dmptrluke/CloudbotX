@@ -63,6 +63,5 @@ def about(event):
     """Gives information about obrbot
     :type event: obrbot.event.Event
     """
-    event.message("Hi, I'm obrbot version {}".format(obrbot.__version__),
-                  "I'm maintained and created by Dabo",
-                  "Backend powered by Redis!")
+    event.message("Hi, I'm obrbot version {} - Created by Dabo - Powered by Redis!".format(obrbot.__version__),
+                  "Source code is located at https://github.com/obrbot/bot-clean")
