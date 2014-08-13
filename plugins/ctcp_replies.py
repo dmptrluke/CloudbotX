@@ -4,6 +4,10 @@ import time
 from obrbot import hook
 import obrbot
 
+plugin_info = {
+    "plugin_category": "core"
+}
+
 
 @asyncio.coroutine
 @hook.regex(r'^\x01VERSION\x01$')
