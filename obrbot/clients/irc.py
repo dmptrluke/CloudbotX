@@ -6,7 +6,7 @@ import logging
 from ssl import SSLContext
 
 from obrbot.connection import Connection, Channel
-from obrbot.event import Event, EventType
+from obrbot.event import Event, EventType, IrcEvent
 
 logger = logging.getLogger("obrbot")
 
@@ -418,9 +418,9 @@ class _IrcProtocol(asyncio.Protocol):
                 target = None
 
             # Set up parsed message
-            event = Event(bot=self.bot, conn=self.conn, event_type=event_type, content=content, target=target,
-                          channel_name=channel, nick=nick, user=user, host=host, mask=mask, irc_raw=line,
-                          irc_command=command, irc_command_params=command_params, irc_ctcp_text=ctcp_text)
+            event = IrcEvent(bot=self.bot, conn=self.conn, event_type=event_type, content=content, target=target,
+                             channel_name=channel, nick=nick, user=user, host=host, mask=mask, irc_raw=line,
+                             irc_command=command, irc_command_params=command_params, irc_ctcp_text=ctcp_text)
             asyncio.async(self.process(event))
 
     @asyncio.coroutine
