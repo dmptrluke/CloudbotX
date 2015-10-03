@@ -23,13 +23,10 @@ def format_bytes(num):
 
 
 @hook.command(autohelp=False)
-def about(event):
-    """Gives information about stratus
-    :type event: stratus.event.Event
-    """
-    event.message("Hi, I'm obr version {} - Created by Dabo - Powered by Redis!".format(stratus.__version__),
-                  "Source code is located at https://github.com/stratus/bot-clean")
-
+def about(conn):
+    """-- Gives information about Stratus."""
+    return "{} is powered by Stratus! ({}) - " \
+           "https://github.com/lukeroge/Stratus/".format(conn.nick, stratus.__version__)
 
 @hook.command(autohelp=False)
 def system():
