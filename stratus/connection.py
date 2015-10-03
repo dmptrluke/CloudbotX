@@ -31,7 +31,7 @@ def grouper(iterable, n, fillvalue=None):
 class Connection:
     """
     A Connection representing each connection the bot makes to a single server
-    :type bot: stratus.bot.Stratus
+    :type bot: stratus.engine.Stratus
     :type loop: asyncio.events.AbstractEventLoop
     :type name: str
     :type channels: dict[str, Channel]
@@ -43,7 +43,7 @@ class Connection:
 
     def __init__(self, bot, name, bot_nick, *, config):
         """
-        :type bot: stratus.bot.Stratus
+        :type bot: stratus.engine.Stratus
         :type name: str
         :type bot_nick: str
         :type config: dict[str, unknown]

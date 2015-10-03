@@ -20,7 +20,7 @@ class EventType(enum.Enum):
 
 class Event:
     """
-    :type bot: stratus.bot.Stratus
+    :type bot: stratus.engine.Stratus
     :type conn: stratus.connection.Connection
     :type type: EventType
     :type content: str
@@ -52,7 +52,7 @@ class Event:
         :param user: The user of the sender that triggered this event
         :param host: The host of the sender that triggered this event
         :param mask: The mask of the sender that triggered this event (nick!user@host)
-        :type bot: stratus.bot.Stratus
+        :type bot: stratus.engine.Stratus
         :type conn: stratus.connection.Connection
         :type content: str
         :type target: str

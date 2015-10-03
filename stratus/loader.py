@@ -103,7 +103,7 @@ class Loader:
     - RegexPlugin loads a regex parameter, and executes on irc lines which match the regex
     - SievePlugin is a catch-all sieve, which all other plugins go through before being executed.
 
-    :type bot: stratus.bot.Stratus
+    :type bot: stratus.engine.Stratus
     :type commands: dict[str, CommandHook]
     :type raw_triggers: dict[str, list[RawHook]]
     :type catch_all_triggers: list[RawHook]
@@ -115,7 +115,7 @@ class Loader:
     def __init__(self, bot):
         """
         Creates a new Loader. You generally only need to do this from inside stratus.bot.Stratus
-        :type bot: stratus.bot.Stratus
+        :type bot: stratus.engine.Stratus
         """
         self.bot = bot
 

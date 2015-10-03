@@ -11,12 +11,12 @@ class Config(dict):
     """
     :type filename: str
     :type path: str
-    :type bot: stratus.bot.Stratus
+    :type bot: stratus.engine.Stratus
     """
 
     def __init__(self, bot, *args, **kwargs):
         """
-        :type bot: stratus.bot.Stratus
+        :type bot: stratus.engine.Stratus
         :type args: list
         :type kwargs: dict
         """

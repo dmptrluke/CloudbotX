@@ -39,7 +39,7 @@ class IrcConnection(Connection):
     def __init__(self, bot, name, bot_nick, *, config, server, port=6667, use_ssl=False,
                  ignore_cert_errors=True, timeout=300):
         """
-        :type bot: stratus.bot.Stratus
+        :type bot: stratus.engine.Stratus
         :type name: str
         :type bot_nick: str
         :type config: dict[str, unknown]
@@ -243,7 +243,7 @@ class _IrcProtocol(asyncio.Protocol):
     """
     :type loop: asyncio.events.AbstractEventLoop
     :type conn: IrcConnection
-    :type bot: stratus.bot.Stratus
+    :type bot: stratus.engine.Stratus
     :type _input_buffer: bytes
     :type _connected: bool
     :type _transport: asyncio.transports.Transport

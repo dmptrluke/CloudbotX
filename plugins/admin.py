@@ -111,7 +111,7 @@ def get_user_groups(text, conn, mask, has_permission, notice):
 def remove_permission_user(text, bot, conn, notice, reply):
     """<user> [group] - removes <user> from [group], or from all groups if no group is specified
     :type text: str
-    :type bot: stratus.bot.Stratus
+    :type bot: stratus.engine.Stratus
     :type conn: stratus.connection.Connection
     """
     split = text.split()
@@ -168,7 +168,7 @@ def add_permissions_user(text, conn, bot, notice, reply):
     """<user> <group> - adds <user> to <group>
     :type text: str
     :type conn: stratus.connection.Connection
-    :type bot: stratus.bot.Stratus
+    :type bot: stratus.engine.Stratus
     """
     split = text.split()
     if len(split) > 2:
@@ -209,7 +209,7 @@ def add_permissions_user(text, conn, bot, notice, reply):
 def stop(text, bot):
     """[reason] - stops me with [reason] as its quit message.
     :type text: str
-    :type bot: stratus.bot.Stratus
+    :type bot: stratus.engine.Stratus
     """
     if text:
         yield from bot.stop(reason=text)
@@ -222,7 +222,7 @@ def stop(text, bot):
 def restart(text, bot):
     """[reason] - restarts me with [reason] as its quit message.
     :type text: str
-    :type bot: stratus.bot.Stratus
+    :type bot: stratus.engine.Stratus
     """
     if text:
         yield from bot.restart(reason=text)

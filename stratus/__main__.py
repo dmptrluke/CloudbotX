@@ -18,7 +18,7 @@ if path0 == install_dir:
 os.chdir(path0)
 
 # import bot
-from stratus.bot import Stratus
+from stratus.engine import Stratus
 
 
 def main():
