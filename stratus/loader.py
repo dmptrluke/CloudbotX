@@ -128,8 +128,7 @@ class Loader:
         self.shutdown_hooks = []
         self._hook_locks = {}
 
-    @asyncio.coroutine
-    def load_all(self, plugin_directories):
+    async def load_all(self, plugin_directories):
         """
         Load a plugin from each *.py file in the given directory.
 
@@ -137,10 +136,9 @@ class Loader:
         """
         path_list = find_plugins(plugin_directories)
         # Load plugins asynchronously :O
-        yield from asyncio.gather(*(self.load_plugin(path) for path in path_list), loop=self.bot.loop)
+        await asyncio.gather(*(self.load_plugin(path) for path in path_list), loop=self.bot.loop)
 
-    @asyncio.coroutine
-    def load_plugin(self, path):
+    async def load_plugin(self, path):
         """
         Loads a plugin from the given path and plugin object, then registers all hooks from that plugin.
 
@@ -170,7 +168,7 @@ class Loader:
         # run on_start hooks
         on_start_event = Event(bot=self.bot)
         for on_start_hook in hooks[HookType.on_start]:
-            success = yield from self.launch(on_start_hook, on_start_event)
+            success = await self.launch(on_start_hook, on_start_event)
             if not success:
                 logger.warning("Not registering hooks from plugin {}: on_start hook errored".format(title))
                 return
@@ -232,8 +230,7 @@ class Loader:
         if self.bot.config.get("logging", {}).get("show_plugin_loading", True):
             logger.debug("Loaded {}".format(repr(hook)))
 
-    @asyncio.coroutine
-    def _execute_hook(self, hook, base_event, hook_event):
+    async def _execute_hook(self, hook, base_event, hook_event):
         """
         Runs the specific hook with the given bot and event.
 
@@ -252,9 +249,9 @@ class Loader:
             # _internal_run_threaded and _internal_run_coroutine prepare the database, and run the hook.
             # _internal_run_* will prepare parameters and the database session, but won't do any error catching.
             if hook.threaded:
-                out = yield from self.bot.loop.run_in_executor(None, hook.function, *parameters)
+                out = await self.bot.loop.run_in_executor(None, hook.function, *parameters)
             else:
-                out = yield from hook.function(*parameters)
+                out = await hook.function(*parameters)
         except Exception:
             logger.exception("Error in hook {}".format(hook.description))
             base_event.message("Error in plugin '{}'.".format(hook.plugin))
@@ -269,8 +266,7 @@ class Loader:
 
         return True
 
-    @asyncio.coroutine
-    def _sieve(self, sieve, event, hook_event):
+    async def _sieve(self, sieve, event, hook_event):
         """
         :type sieve: stratus.loader.Hook
         :type event: stratus.event.Event
@@ -279,17 +275,16 @@ class Loader:
         """
         try:
             if sieve.threaded:
-                result = yield from self.bot.loop.run_in_executor(None, sieve.function, event, hook_event)
+                result = await self.bot.loop.run_in_executor(None, sieve.function, event, hook_event)
             else:
-                result = yield from sieve.function(event, hook_event)
+                result = await sieve.function(event, hook_event)
         except Exception:
             logger.exception("Error running sieve {} on {}:".format(sieve.description, hook_event.hook.description))
             return None
         else:
             return result
 
-    @asyncio.coroutine
-    def launch(self, hook, base_event, hevent=None):
+    async def launch(self, hook, base_event, hevent=None):
         """
         Dispatch a given event to a given hook using a given bot object.
 
@@ -306,7 +301,7 @@ class Loader:
 
         if hook.type not in (HookType.on_start, HookType.on_stop):  # we don't need sieves on on_start or on_stop hooks.
             for sieve in self.bot.loader.sieves:
-                base_event = yield from self._sieve(sieve, base_event, hevent)
+                base_event = await self._sieve(sieve, base_event, hevent)
                 if base_event is None:
                     return False
 
@@ -321,20 +316,19 @@ class Loader:
                 self._hook_locks[key] = asyncio.Lock(loop=self.bot.loop)
 
             # Run the plugin with the message, and wait for it to finish
-            with (yield from self._hook_locks[key]):
-                result = yield from self._execute_hook(hook, base_event, hevent)
+            with (await self._hook_locks[key]):
+                result = await self._execute_hook(hook, base_event, hevent)
         else:
             # Run the plugin with the message, and wait for it to finish
-            result = yield from self._execute_hook(hook, base_event, hevent)
+            result = await self._execute_hook(hook, base_event, hevent)
 
         # Return the result
         return result
 
-    @asyncio.coroutine
-    def run_shutdown_hooks(self):
+    async def run_shutdown_hooks(self):
         shutdown_event = Event(bot=self.bot)
         tasks = (self.launch(hook, shutdown_event) for hook in self.shutdown_hooks)
-        yield from asyncio.gather(*tasks, loop=self.bot.loop)
+        await asyncio.gather(*tasks, loop=self.bot.loop)
 
 
 class Hook:
