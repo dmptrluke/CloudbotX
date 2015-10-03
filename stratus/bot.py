@@ -23,7 +23,7 @@ def clean_name(n):
     return re.sub('\s+', '', n.lower())
 
 
-class ObrBot:
+class Stratus:
     """
     :type start_time: float
     :type running: bool

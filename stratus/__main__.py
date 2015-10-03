@@ -18,7 +18,7 @@ if path0 == install_dir:
 os.chdir(path0)
 
 # import bot
-from stratus.bot import ObrBot
+from stratus.bot import Stratus
 
 
 def main():
@@ -32,7 +32,7 @@ def main():
     logger.info("Starting stratus.".format())
 
     # create the bot
-    bot = ObrBot()
+    bot = Stratus()
 
     # whether we are killed while restarting
     stopped_while_restarting = False
