@@ -2,15 +2,15 @@ import asyncio
 from fnmatch import fnmatch
 import logging
 
-from obrbot import hook
-from obrbot.plugin import HookType
+from stratus import hook
+from stratus.plugin import HookType
 
 plugin_info = {
     "plugin_category": "core",
     "command_category_name": "Administration"
 }
 
-logger = logging.getLogger("obrbot")
+logger = logging.getLogger("stratus")
 
 
 @asyncio.coroutine

@@ -1,7 +1,7 @@
 import re
 
-from obrbot.event import EventType
-from obrbot.plugin import HookType
+from stratus.event import EventType
+from stratus.plugin import HookType
 
 valid_command_re = re.compile(r"^[\w_-]+$")
 

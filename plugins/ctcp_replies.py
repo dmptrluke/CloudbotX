@@ -1,8 +1,8 @@
 import asyncio
 import time
 
-from obrbot import hook
-import obrbot
+from stratus import hook
+import stratus
 
 plugin_info = {
     "plugin_category": "core"
@@ -12,7 +12,7 @@ plugin_info = {
 @asyncio.coroutine
 @hook.regex(r'^\x01VERSION\x01$')
 def ctcp_version(notice):
-    notice("\x01VERSION: Obr v{} - https://github.com/obrbot/bot-clean".format(obrbot.__version__))
+    notice("\x01VERSION: Obr v{} - https://github.com/stratus/bot-clean".format(stratus.__version__))
 
 
 @asyncio.coroutine

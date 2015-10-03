@@ -6,11 +6,11 @@ import gc
 
 import redis
 
-from obrbot.connection import Connection
-from obrbot.config import Config
-from obrbot.plugin import PluginManager
-from obrbot.event import Event, CommandHookEvent, RegexHookEvent, EventType
-from obrbot.clients.irc import IrcConnection
+from stratus.connection import Connection
+from stratus.config import Config
+from stratus.plugin import PluginManager
+from stratus.event import Event, CommandHookEvent, RegexHookEvent, EventType
+from stratus.clients.irc import IrcConnection
 
 logger = logging.getLogger("bot")
 

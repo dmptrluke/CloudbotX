@@ -5,11 +5,11 @@ import logging
 import re
 import itertools
 
-from obrbot.event import EventType
-from obrbot.permissions import PermissionManager
-from obrbot.util.dictionaries import CaseInsensitiveDict
+from stratus.event import EventType
+from stratus.permissions import PermissionManager
+from stratus.util.dictionaries import CaseInsensitiveDict
 
-logger = logging.getLogger("obrbot")
+logger = logging.getLogger("stratus")
 
 mode_re = re.compile(r'([@&~%\+]*)([a-zA-Z0-9_\\\[\]\{\}\^`\|][a-zA-Z0-9_\\\[\]\{\}\^`\|-]*)')
 symbol_to_mode = {
@@ -18,7 +18,7 @@ symbol_to_mode = {
     # TODO: more of these, for half-op and stuff
 }
 
-history_key = "obrbot:connections:{}:channels:{}:history"
+history_key = "stratus:connections:{}:channels:{}:history"
 
 
 def grouper(iterable, n, fillvalue=None):

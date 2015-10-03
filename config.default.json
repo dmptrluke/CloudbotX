@@ -9,10 +9,10 @@
                 "ignore_cert": true,
                 "password": ""
             },
-            "nick": "ObrBot",
-            "user": "obrbot",
-            "real_name": "ObrBot",
-            "channels": ["#obrbot"],
+            "nick": "Stratus",
+            "user": "stratus",
+            "real_name": "Stratus",
+            "channels": ["#dmptr"],
             "nickserv": {
                 "enabled": false,
                 "nickserv_password": "",

@@ -6,15 +6,15 @@ import time
 import re
 import itertools
 
-import obrbot
-from obrbot import hook
-from obrbot.event import EventType
+import stratus
+from stratus import hook
+from stratus.event import EventType
 
 plugin_info = {
     "plugin_category": "core"
 }
 
-logger = logging.getLogger('obrbot')
+logger = logging.getLogger('stratus')
 
 irc_color_re = re.compile(r"(\x03(\d+,\d+|\d)|[\x0f\x02\x16\x1f])")
 
@@ -161,7 +161,7 @@ def get_log_filename(server, chan):
     current_time = time.gmtime()
     folder_name = time.strftime(folder_format, current_time)
     file_name = time.strftime(file_format.format(chan=chan, server=server), current_time).lower()
-    return os.path.join(obrbot.log_dir, folder_name, file_name)
+    return os.path.join(stratus.log_dir, folder_name, file_name)
 
 
 def get_log_stream(server, chan):
@@ -179,7 +179,9 @@ def get_log_stream(server, chan):
         log_dir = os.path.dirname(new_filename)
         os.makedirs(log_dir, exist_ok=True)
 
-        log_stream = codecs.open(new_filename, "a", "utf-8")
+        new_filename = new_filename.replace("*", "server")
+
+        log_stream = codecs.open(new_filename, mode="a", encoding="utf-8", buffering=1)
         stream_cache[cache_key] = (new_filename, log_stream)
 
     return log_stream
@@ -189,7 +191,7 @@ def get_raw_log_filename(server):
     current_time = time.gmtime()
     folder_name = time.strftime(folder_format, current_time)
     file_name = time.strftime(raw_file_format.format(server=server), current_time).lower()
-    return os.path.join(obrbot.log_dir, "raw", folder_name, file_name)
+    return os.path.join(stratus.log_dir, "raw", folder_name, file_name)
 
 
 def get_raw_log_stream(server):
@@ -206,7 +208,7 @@ def get_raw_log_stream(server):
         log_dir = os.path.dirname(new_filename)
         os.makedirs(log_dir, exist_ok=True)
 
-        log_stream = codecs.open(new_filename, "a", "utf-8")
+        log_stream = codecs.open(new_filename, mode="a", encoding="utf-8", buffering=1)
         stream_cache[server] = (new_filename, log_stream)
 
     return log_stream
@@ -221,7 +223,8 @@ def log_raw(event):
     if not logging_config.get("raw_file_log", False):
         return
 
-    get_raw_log_stream(event.conn.name).write(event.irc_raw + "\n")
+    get_raw_log_stream(event.conn.name).write(event.irc_raw + os.linesep)
+    get_raw_log_stream(event.conn.name).flush()
 
 
 @hook.irc_raw("*", single_instance=True)
@@ -233,11 +236,13 @@ def log(event):
 
     if text is not None:
         if event.irc_command in ["PRIVMSG", "PART", "JOIN", "MODE", "TOPIC", "NOTICE"] and event.chan_name:
-            get_log_stream(event.conn.name, event.chan_name).write(text + '\n')
+            get_log_stream(event.conn.name, event.chan_name).write(text + os.linesep)
+            get_log_stream(event.conn.name, event.chan_name).flush()
         elif event.irc_command in ["QUIT", "NICK"] and event.channels:
             for channel in event.channels:
                 chan_name = channel.name.lower()
-                get_log_stream(event.conn.name, chan_name).write(text + '\n')
+                get_log_stream(event.conn.name, chan_name).write(text + os.linesep)
+                get_log_stream(event.conn.name, chan_name).flush()
 
 
 # Log console separately to prevent lag

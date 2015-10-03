@@ -1,8 +1,8 @@
 import asyncio
 
-from obrbot import hook
-from obrbot.plugin import HookType
-from obrbot.util import bucket
+from stratus import hook
+from stratus.plugin import HookType
+from stratus.util import bucket
 
 plugin_info = {
     "plugin_category": "core"

@@ -5,10 +5,10 @@ import ssl
 import logging
 from ssl import SSLContext
 
-from obrbot.connection import Connection, Channel
-from obrbot.event import Event, EventType, IrcEvent
+from stratus.connection import Connection, Channel
+from stratus.event import Event, EventType, IrcEvent
 
-logger = logging.getLogger("obrbot")
+logger = logging.getLogger("stratus")
 
 irc_prefix_re = re.compile(r":([^ ]*) ([^ ]*) (.*)")
 irc_noprefix_re = re.compile(r"([^ ]*) (.*)")
@@ -106,7 +106,7 @@ class IrcConnection(Connection):
         # send the password, nick, and user
         self.set_pass(self.config["connection"].get("password"))
         self.set_nick(self.bot_nick)
-        self.cmd("USER", self.config.get('user', 'obrbot'), "3", "*",
+        self.cmd("USER", self.config.get('user', 'stratus'), "3", "*",
                  self.config.get('real_name', 'ObrBot'))
 
     def quit(self, reason=None):

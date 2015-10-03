@@ -2,7 +2,7 @@ import asyncio
 import enum
 import logging
 
-logger = logging.getLogger("obrbot")
+logger = logging.getLogger("stratus")
 
 
 @enum.unique
@@ -27,7 +27,7 @@ class Event:
     :type target: str
     :type chan_name: str
     :type channel: obrbot.connection.Channel
-    :type channels: list(obrbot.connection.Channel)
+    :type channels: list(stratus.connection.Channel)
     :type nick: str
     :type user: str
     :type host: str

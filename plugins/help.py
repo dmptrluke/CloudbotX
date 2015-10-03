@@ -2,7 +2,7 @@ from operator import attrgetter
 import asyncio
 import re
 
-from obrbot import hook
+from stratus import hook
 
 plugin_info = {
     "plugin_category": "core",

@@ -1,13 +1,13 @@
 import asyncio
 import logging
 
-from obrbot import hook
+from stratus import hook
 
 plugin_info = {
     "plugin_category": "core"
 }
 
-logger = logging.getLogger('obrbot')
+logger = logging.getLogger('stratus')
 
 # Identify to NickServ (or other service)
 @asyncio.coroutine

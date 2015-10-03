@@ -8,9 +8,9 @@ import os
 import re
 import itertools
 
-from obrbot.event import Event, HookEvent
+from stratus.event import Event, HookEvent
 
-logger = logging.getLogger("obrbot")
+logger = logging.getLogger("stratus")
 
 
 class HookType(enum.Enum):
@@ -52,7 +52,7 @@ def find_hooks(title, module):
 
     for name, func in module.__dict__.items():
         if hasattr(func, "bot_hooks"):
-            # if it has obrbot hook
+            # if it has stratus hook
             for hook in func.bot_hooks:
                 hook_type = hook.type
                 hook_class = _hook_classes[hook_type]
@@ -114,7 +114,7 @@ class PluginManager:
 
     def __init__(self, bot):
         """
-        Creates a new PluginManager. You generally only need to do this from inside obrbot.bot.ObrBot
+        Creates a new PluginManager. You generally only need to do this from inside stratus.bot.ObrBot
         :type bot: obrbot.bot.ObrBot
         """
         self.bot = bot

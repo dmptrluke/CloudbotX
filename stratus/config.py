@@ -4,7 +4,7 @@ import time
 import sys
 import logging
 
-logger = logging.getLogger("obrbot")
+logger = logging.getLogger("stratus")
 
 
 class Config(dict):

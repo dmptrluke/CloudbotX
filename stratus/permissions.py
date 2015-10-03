@@ -1,7 +1,7 @@
 from fnmatch import fnmatch
 import logging
 
-logger = logging.getLogger("obrbot")
+logger = logging.getLogger("stratus")
 
 
 class PermissionManager(object):

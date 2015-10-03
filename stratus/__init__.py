@@ -59,7 +59,7 @@ def _setup():
             }
         },
         "loggers": {
-            "obrbot": {
+            "stratus": {
                 "level": "DEBUG",
                 "handlers": ["console", "file"]
             }
@@ -76,7 +76,7 @@ def _setup():
             "level": "DEBUG",
             "filename": os.path.join(logging_dir, "debug.log")
         }
-        dict_config["loggers"]["obrbot"]["handlers"].append("debug_file")
+        dict_config["loggers"]["stratus"]["handlers"].append("debug_file")
 
     logging.config.dictConfig(dict_config)
 

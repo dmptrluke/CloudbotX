@@ -5,8 +5,8 @@ from datetime import timedelta
 
 import psutil
 
-from obrbot import hook
-import obrbot
+from stratus import hook
+import stratus
 
 plugin_info = {
     "plugin_category": "obr",
@@ -24,11 +24,11 @@ def format_bytes(num):
 
 @hook.command(autohelp=False)
 def about(event):
-    """Gives information about obrbot
-    :type event: obrbot.event.Event
+    """Gives information about stratus
+    :type event: stratus.event.Event
     """
-    event.message("Hi, I'm obr version {} - Created by Dabo - Powered by Redis!".format(obrbot.__version__),
-                  "Source code is located at https://github.com/obrbot/bot-clean")
+    event.message("Hi, I'm obr version {} - Created by Dabo - Powered by Redis!".format(stratus.__version__),
+                  "Source code is located at https://github.com/stratus/bot-clean")
 
 
 @hook.command(autohelp=False)

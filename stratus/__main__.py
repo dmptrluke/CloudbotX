@@ -18,7 +18,7 @@ if path0 == install_dir:
 os.chdir(path0)
 
 # import bot
-from obrbot.bot import ObrBot
+from stratus.bot import ObrBot
 
 
 def main():
@@ -27,9 +27,9 @@ def main():
     logging.logThreads = 0
     logging.logProcesses = 0
     logging.logMultiprocessing = 0
-    logger = logging.getLogger("obrbot")
+    logger = logging.getLogger("stratus")
 
-    logger.info("Starting obrbot.".format())
+    logger.info("Starting stratus.".format())
 
     # create the bot
     bot = ObrBot()
@@ -61,7 +61,7 @@ def main():
 
     # the bot has stopped, do we want to restart?
     if restart:
-        # remove reference to obrbot, so exit_gracefully won't try to stop it
+        # remove reference to stratus, so exit_gracefully won't try to stop it
         bot = None
         # sleep one second for timeouts
         time.sleep(1)
