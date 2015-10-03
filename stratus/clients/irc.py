@@ -133,24 +133,30 @@ class IrcConnection(Connection):
 
     def message(self, target, *messages, log_hide=None):
         for text in messages:
+            text = text.replace("\n","").replace("\r","")
             self.cmd("PRIVMSG", target, text, log_hide=log_hide)
 
     def action(self, target, text, log_hide=None):
+        text = text.replace("\n","").replace("\r","")
         self.ctcp(target, "ACTION", text, log_hide=log_hide)
 
     def notice(self, target, text, log_hide=None):
+        text = text.replace("\n","").replace("\r","")
         self.cmd("NOTICE", target, text, log_hide=log_hide)
 
     def set_nick(self, nick):
+        text = text.replace("\n","").replace("\r","")
         self.cmd("NICK", nick)
 
     def join(self, channel):
         if channel not in self.channels:
+            channel = channel.replace("\n","").replace("\r","")
             self.cmd("JOIN", channel)
             self.channels[channel] = Channel(self.name, channel)
 
     def part(self, channel):
         if channel in self.channels:
+            channel = channel.replace("\n","").replace("\r","")
             self.cmd("PART", channel)
             del self.channels[channel]
 
