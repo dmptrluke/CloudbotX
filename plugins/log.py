@@ -65,7 +65,7 @@ ctcp_known_with_message = ("[{server}:{channel}] {nick} [{user}@{host}] "
 def format_event(event):
     """
     Format an event
-    :type event: obrbot.event.Event | obrbot.event.IrcEvent
+    :type event: stratus.event.Event | stratus.event.IrcEvent
     :rtype: str
     """
 
@@ -95,7 +95,7 @@ def format_event(event):
 def format_irc_event(event, args):
     """
     Format an IRC event
-    :type event: obrbot.event.IrcEvent
+    :type event: stratus.event.IrcEvent
     :param event: The event to format
     :param args: The pre-created arguments
     """
@@ -217,7 +217,7 @@ def get_raw_log_stream(server):
 @hook.irc_raw("*", single_instance=True)
 def log_raw(event):
     """
-    :type event: obrbot.event.IrcEvent
+    :type event: stratus.event.IrcEvent
     """
     logging_config = event.bot.config.get('logging', {})
     if not logging_config.get("raw_file_log", False):
@@ -230,7 +230,7 @@ def log_raw(event):
 @hook.irc_raw("*", single_instance=True)
 def log(event):
     """
-    :type event: obrbot.event.IrcEvent
+    :type event: stratus.event.IrcEvent
     """
     text = format_event(event)
 
@@ -250,7 +250,7 @@ def log(event):
 @hook.irc_raw("*", run_first=True)
 def console_log(event):
     """
-    :type event: obrbot.event.Event
+    :type event: stratus.event.Event
     """
     text = format_event(event)
     if text is not None:

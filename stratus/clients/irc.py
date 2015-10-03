@@ -39,7 +39,7 @@ class IrcConnection(Connection):
     def __init__(self, bot, name, bot_nick, *, config, server, port=6667, use_ssl=False,
                  ignore_cert_errors=True, timeout=300):
         """
-        :type bot: obrbot.bot.ObrBot
+        :type bot: stratus.bot.Stratus
         :type name: str
         :type bot_nick: str
         :type config: dict[str, unknown]
@@ -107,7 +107,7 @@ class IrcConnection(Connection):
         self.set_pass(self.config["connection"].get("password"))
         self.set_nick(self.bot_nick)
         self.cmd("USER", self.config.get('user', 'stratus'), "3", "*",
-                 self.config.get('real_name', 'ObrBot'))
+                 self.config.get('real_name', 'Stratus'))
 
     def quit(self, reason=None):
         if self._quit:
@@ -243,7 +243,7 @@ class _IrcProtocol(asyncio.Protocol):
     """
     :type loop: asyncio.events.AbstractEventLoop
     :type conn: IrcConnection
-    :type bot: obrbot.bot.ObrBot
+    :type bot: stratus.bot.Stratus
     :type _input_buffer: bytes
     :type _connected: bool
     :type _transport: asyncio.transports.Transport

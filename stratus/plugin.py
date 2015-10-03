@@ -68,9 +68,9 @@ def _prepare_parameters(hook, base_event, hook_event):
     """
     Prepares arguments for the given hook
 
-    :type hook: obrbot.plugin.Hook
-    :type base_event: obrbot.event.Event
-    :type hook_event: obrbot.event.HookEvent
+    :type hook: stratus.plugin.Hook
+    :type base_event: stratus.event.Event
+    :type hook_event: stratus.event.HookEvent
     :rtype: list
     """
     parameters = []
@@ -91,7 +91,7 @@ def _prepare_parameters(hook, base_event, hook_event):
 
 class PluginManager:
     """
-    PluginManager is the core of ObrBot plugin loading.
+    PluginManager is the core of Stratus plugin loading.
 
     PluginManager loads Plugins, and adds their Hooks to easy-access dicts/lists.
 
@@ -103,19 +103,19 @@ class PluginManager:
     - RegexPlugin loads a regex parameter, and executes on irc lines which match the regex
     - SievePlugin is a catch-all sieve, which all other plugins go through before being executed.
 
-    :type bot: obrbot.bot.ObrBot
+    :type bot: stratus.bot.Stratus
     :type commands: dict[str, CommandHook]
     :type raw_triggers: dict[str, list[RawHook]]
     :type catch_all_triggers: list[RawHook]
-    :type event_type_hooks: dict[obrbot.event.EventType, list[EventHook]]
+    :type event_type_hooks: dict[stratus.event.EventType, list[EventHook]]
     :type regex_hooks: list[(re.__Regex, RegexHook)]
     :type sieves: list[SieveHook]
     """
 
     def __init__(self, bot):
         """
-        Creates a new PluginManager. You generally only need to do this from inside stratus.bot.ObrBot
-        :type bot: obrbot.bot.ObrBot
+        Creates a new PluginManager. You generally only need to do this from inside stratus.bot.Stratus
+        :type bot: stratus.bot.Stratus
         """
         self.bot = bot
 
@@ -239,9 +239,9 @@ class PluginManager:
 
         Returns False if the hook errored, True otherwise.
 
-        :type hook: obrbot.plugin.Hook
-        :type base_event: obrbot.event.Event
-        :type hook_event: obrbot.event.HookEvent
+        :type hook: stratus.plugin.Hook
+        :type base_event: stratus.event.Event
+        :type hook_event: stratus.event.HookEvent
         :rtype: bool
         """
         parameters = _prepare_parameters(hook, base_event, hook_event)
@@ -272,10 +272,10 @@ class PluginManager:
     @asyncio.coroutine
     def _sieve(self, sieve, event, hook_event):
         """
-        :type sieve: obrbot.plugin.Hook
-        :type event: obrbot.event.Event
-        :type hook_event: obrbot.event.HookEvent
-        :rtype: obrbot.event.Event
+        :type sieve: stratus.plugin.Hook
+        :type event: stratus.event.Event
+        :type hook_event: stratus.event.HookEvent
+        :rtype: stratus.event.Event
         """
         try:
             if sieve.threaded:
@@ -295,9 +295,9 @@ class PluginManager:
 
         Returns False if the hook didn't run successfully, and True if it ran successfully.
 
-        :type base_event: obrbot.event.Event
-        :type hevent: obrbot.event.HookEvent | obrbot.event.CommandHookEvent
-        :type hook: obrbot.plugin.Hook | obrbot.plugin.CommandHook
+        :type base_event: stratus.event.Event
+        :type hevent: stratus.event.HookEvent | stratus.event.CommandHookEvent
+        :type hook: stratus.plugin.Hook | stratus.plugin.CommandHook
         :rtype: bool
         """
 
@@ -405,14 +405,14 @@ class SieveHook(Hook):
 
 class EventHook(Hook):
     """
-    :type types: set[obrbot.event.EventType]
+    :type types: set[stratus.event.EventType]
     """
     type = HookType.event
 
     def __init__(self, plugin, decorator):
         """
         :type plugin: Plugin
-        :type decorator: obrbot.hook.EventDecorator
+        :type decorator: stratus.hook.EventDecorator
         """
         self.types = decorator.triggers
 
@@ -428,7 +428,7 @@ class RegexHook(Hook):
     def __init__(self, plugin, decorator):
         """
         :type plugin: Plugin
-        :type decorator: obrbot.hook.RegexDecorator
+        :type decorator: stratus.hook.RegexDecorator
         """
         self.triggers = decorator.triggers
 
@@ -450,7 +450,7 @@ class CommandHook(Hook):
     def __init__(self, plugin, decorator):
         """
         :type plugin: str
-        :type decorator: obrbot.hook.CommandDecorator
+        :type decorator: stratus.hook.CommandDecorator
         """
         self.auto_help = decorator.kwargs.pop("autohelp", True)
 
@@ -475,7 +475,7 @@ class RawHook(Hook):
     def __init__(self, plugin, decorator):
         """
         :type plugin: Plugin
-        :type decorator: obrbot.hook.IrcRawDecorator
+        :type decorator: stratus.hook.IrcRawDecorator
         """
         self.triggers = decorator.triggers
 

@@ -17,8 +17,8 @@ logger = logging.getLogger("stratus")
 @hook.sieve()
 def ignore_sieve(event, hook_event):
     """ blocks events from ignored channels/hosts
-    :type event: obrbot.event.Event
-    :type hook_event: obrbot.event.HookEvent
+    :type event: stratus.event.Event
+    :type hook_event: stratus.event.HookEvent
     """
     bot = event.bot
     # don't block event hooks

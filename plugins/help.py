@@ -15,8 +15,8 @@ plugin_info = {
 def help_command(text, conn, bot, notice, has_permission):
     """[command] - gives help for [command], or lists all available commands if no command is specified
     :type text: str
-    :type conn: obrbot.connection.Connection
-    :type bot: obrbot.bot.ObrBot
+    :type conn: stratus.connection.Connection
+    :type bot: stratus.bot.Stratus
     """
     if text:
         searching_for = text.lower().strip()

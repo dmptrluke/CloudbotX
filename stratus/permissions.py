@@ -15,7 +15,7 @@ class PermissionManager(object):
 
     def __init__(self, conn):
         """
-        :type conn: obrbot.connection.Connection
+        :type conn: stratus.connection.Connection
         """
         logger.info("[{}] Created permission manager for {}.".format(conn.name, conn.name))
 

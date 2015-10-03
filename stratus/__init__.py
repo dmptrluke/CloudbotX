@@ -2,7 +2,7 @@ import sys
 
 # check python version
 if sys.version_info < (3, 4, 0):
-    print("ObrBot requires Python 3.4 or newer.")
+    print("Stratus requires Python 3.4 or newer.")
     sys.exit(1)
 
 import json

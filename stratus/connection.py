@@ -31,7 +31,7 @@ def grouper(iterable, n, fillvalue=None):
 class Connection:
     """
     A Connection representing each connection the bot makes to a single server
-    :type bot: obrbot.bot.ObrBot
+    :type bot: stratus.bot.Stratus
     :type loop: asyncio.events.AbstractEventLoop
     :type name: str
     :type channels: dict[str, Channel]
@@ -43,7 +43,7 @@ class Connection:
 
     def __init__(self, bot, name, bot_nick, *, config):
         """
-        :type bot: obrbot.bot.ObrBot
+        :type bot: stratus.bot.Stratus
         :type name: str
         :type bot_nick: str
         :type config: dict[str, unknown]
@@ -307,7 +307,7 @@ class Channel:
     def _add_history(self, event, *variables):
         """
         Adds an event to this channels history
-        :type event: obrbot.event.Event
+        :type event: stratus.event.Event
         """
         to_store = '\n'.join(itertools.chain((event.type.name,), (str(v) for v in variables)))
         score = (datetime.datetime.utcnow() - datetime.datetime.utcfromtimestamp(0)).total_seconds()
@@ -316,7 +316,7 @@ class Channel:
     @asyncio.coroutine
     def get_history(self, event, min_time, with_timestamps=False):
         """
-        :type event: obrbot.event.Event
+        :type event: stratus.event.Event
         :type min_time: datetime.datetime
         :rtype: [(EventType, str, str)] | [(datetime.datetime, EventType, str, str)]
         :param event: An event to access database from
@@ -338,7 +338,7 @@ class Channel:
     def track_message(self, event):
         """
         Adds a message to this channel's history, adding user info from the message as well
-        :type event: obrbot.event.Event
+        :type event: stratus.event.Event
         """
         user = self.users[event.nick]
         if not user.mask_known:
@@ -351,7 +351,7 @@ class Channel:
     @asyncio.coroutine
     def track_join(self, event):
         """
-        :type event: obrbot.event.Event
+        :type event: stratus.event.Event
         """
         self.users[event.nick] = User(event.nick, ident=event.user, host=event.host, mask=event.mask, mode='')
         yield from self._add_history(event, event.nick)
@@ -359,7 +359,7 @@ class Channel:
     @asyncio.coroutine
     def track_part(self, event):
         """
-        :type event: obrbot.event.Event
+        :type event: stratus.event.Event
         """
         del self.users[event.nick]
         yield from self._add_history(event, event.nick, event.content)
@@ -367,7 +367,7 @@ class Channel:
     @asyncio.coroutine
     def track_quit(self, event):
         """
-        :type event: obrbot.event.Event
+        :type event: stratus.event.Event
         """
         del self.users[event.nick]
         yield from self._add_history(event, event.nick, event.content)
@@ -375,7 +375,7 @@ class Channel:
     @asyncio.coroutine
     def track_kick(self, event):
         """
-        :type event: obrbot.event.Event
+        :type event: stratus.event.Event
         """
         del self.users[event.target]
         yield from self._add_history(event, event.nick, event.target, event.content)
@@ -397,7 +397,7 @@ class Channel:
     @asyncio.coroutine
     def track_topic(self, event):
         """
-        :type event: obrbot.event.Event
+        :type event: stratus.event.Event
         """
         user = self.users[event.nick]
         if not user.mask_known:
@@ -410,7 +410,7 @@ class Channel:
     def track_mode(self, event):
         """
         IRC-specific tracking of mode changing
-        :type event: obrbot.event.Event
+        :type event: stratus.event.Event
         """
         user = self.users[event.target]
         mode_change = event.irc_command_params[1]  # in `:Dabo!dabo@dabo.us MODE #obr +v obr`, `+v` is the second param

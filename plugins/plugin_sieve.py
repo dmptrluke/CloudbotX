@@ -19,8 +19,8 @@ channel_buckets = {}
 @hook.sieve()
 def sieve_suite(event, hook_event):
     """
-    :type event: obrbot.event.Event
-    :type hook_event: obrbot.event.HookEvent
+    :type event: stratus.event.Event
+    :type hook_event: stratus.event.HookEvent
     """
 
     # check permissions

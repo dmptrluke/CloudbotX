@@ -20,13 +20,13 @@ class EventType(enum.Enum):
 
 class Event:
     """
-    :type bot: obrbot.bot.ObrBot
-    :type conn: obrbot.connection.Connection
+    :type bot: stratus.bot.Stratus
+    :type conn: stratus.connection.Connection
     :type type: EventType
     :type content: str
     :type target: str
     :type chan_name: str
-    :type channel: obrbot.connection.Channel
+    :type channel: stratus.connection.Channel
     :type channels: list(stratus.connection.Channel)
     :type nick: str
     :type user: str
@@ -42,7 +42,7 @@ class Event:
         All of these parameters except for `bot`  are optional.
         The irc_* parameters should only be specified for IRC events.
 
-        :param bot: The ObrBot instance this event was triggered from
+        :param bot: The Stratus instance this event was triggered from
         :param conn: The Connection instance this event was triggered from
         :param event_type: The type of the event
         :param content: The content of the message, or the reason for an join or part
@@ -52,8 +52,8 @@ class Event:
         :param user: The user of the sender that triggered this event
         :param host: The host of the sender that triggered this event
         :param mask: The mask of the sender that triggered this event (nick!user@host)
-        :type bot: obrbot.bot.ObrBot
-        :type conn: obrbot.connection.Connection
+        :type bot: stratus.bot.Stratus
+        :type conn: stratus.connection.Connection
         :type content: str
         :type target: str
         :type event_type: EventType
@@ -324,7 +324,7 @@ class IrcEvent(Event):
 
 class HookEvent:
     """
-    :type hook: obrbot.plugin.Hook
+    :type hook: stratus.plugin.Hook
     :type base_event: Event
     """
     __slots__ = ['hook', 'base_event']
@@ -332,7 +332,7 @@ class HookEvent:
     def __init__(self, *, hook, base_event):
         """
         :param hook: The hook object that this event will run on.
-        :type hook: obrbot.plugin.Hook
+        :type hook: stratus.plugin.Hook
         :type base_event: Event
         """
         self.hook = hook
@@ -348,7 +348,7 @@ class HookEvent:
 
 class CommandHookEvent(HookEvent):
     """
-    :type hook: obrbot.plugin.CommandHook
+    :type hook: stratus.plugin.CommandHook
     :type text: str
     :type triggered_command: str
     """
@@ -358,7 +358,7 @@ class CommandHookEvent(HookEvent):
         """
         :param text: The arguments for the command
         :param triggered_command: The command that was triggered
-        :type hook: obrbot.plugin.CommandHook
+        :type hook: stratus.plugin.CommandHook
         :type text: str
         :type triggered_command: str
         """
@@ -386,7 +386,7 @@ class CommandHookEvent(HookEvent):
 
 class RegexHookEvent(HookEvent):
     """
-    :type hook: obrbot.plugin.RegexHook
+    :type hook: stratus.plugin.RegexHook
     :type match: re.__Match
     """
     __slots__ = ['match']

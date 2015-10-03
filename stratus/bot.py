@@ -70,9 +70,9 @@ class Stratus:
 
     def run(self):
         """
-        Starts ObrBot.
+        Starts Stratus.
         This will load plugins, connect to IRC, and process input.
-        :return: True if ObrBot should be restarted, False otherwise
+        :return: True if Stratus should be restarted, False otherwise
         :rtype: bool
         """
         # Initializes the bot, plugins and connections

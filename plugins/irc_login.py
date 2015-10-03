@@ -14,7 +14,7 @@ logger = logging.getLogger('stratus')
 @hook.irc_raw('004')
 def onjoin(conn):
     """
-    :type conn: obrbot.clients.irc.IrcConnection
+    :type conn: stratus.clients.irc.IrcConnection
     """
     nickserv = conn.config.get('nickserv')
     if nickserv and nickserv.get('enabled', True):
@@ -51,7 +51,7 @@ def onjoin(conn):
 @hook.irc_raw('004')
 def keep_alive(conn):
     """
-    :type conn: obrbot.clients.irc.IrcConnection
+    :type conn: stratus.clients.irc.IrcConnection
     """
 
     if not conn.config.get('keep_alive', False):

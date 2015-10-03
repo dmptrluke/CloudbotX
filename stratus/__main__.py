@@ -56,7 +56,7 @@ def main():
 
     # start the bot master
 
-    # ObrBot.run() will return True if it should restart, False otherwise
+    # Stratus.run() will return True if it should restart, False otherwise
     restart = bot.run()
 
     # the bot has stopped, do we want to restart?
