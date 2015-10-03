@@ -68,7 +68,7 @@ def _prepare_parameters(hook, base_event, hook_event):
     """
     Prepares arguments for the given hook
 
-    :type hook: stratus.plugin.Hook
+    :type hook: stratus.loader.Hook
     :type base_event: stratus.event.Event
     :type hook_event: stratus.event.HookEvent
     :rtype: list
@@ -89,11 +89,11 @@ def _prepare_parameters(hook, base_event, hook_event):
     return parameters
 
 
-class PluginManager:
+class Loader:
     """
-    PluginManager is the core of Stratus plugin loading.
+    Loader is the core of Stratus plugin loading.
 
-    PluginManager loads Plugins, and adds their Hooks to easy-access dicts/lists.
+    Loader loads Plugins, and adds their Hooks to easy-access dicts/lists.
 
     Each Plugin represents a file, and loads hooks onto itself using find_hooks.
 
@@ -114,7 +114,7 @@ class PluginManager:
 
     def __init__(self, bot):
         """
-        Creates a new PluginManager. You generally only need to do this from inside stratus.bot.Stratus
+        Creates a new Loader. You generally only need to do this from inside stratus.bot.Stratus
         :type bot: stratus.bot.Stratus
         """
         self.bot = bot
@@ -239,7 +239,7 @@ class PluginManager:
 
         Returns False if the hook errored, True otherwise.
 
-        :type hook: stratus.plugin.Hook
+        :type hook: stratus.loader.Hook
         :type base_event: stratus.event.Event
         :type hook_event: stratus.event.HookEvent
         :rtype: bool
@@ -272,7 +272,7 @@ class PluginManager:
     @asyncio.coroutine
     def _sieve(self, sieve, event, hook_event):
         """
-        :type sieve: stratus.plugin.Hook
+        :type sieve: stratus.loader.Hook
         :type event: stratus.event.Event
         :type hook_event: stratus.event.HookEvent
         :rtype: stratus.event.Event
@@ -297,7 +297,7 @@ class PluginManager:
 
         :type base_event: stratus.event.Event
         :type hevent: stratus.event.HookEvent | stratus.event.CommandHookEvent
-        :type hook: stratus.plugin.Hook | stratus.plugin.CommandHook
+        :type hook: stratus.loader.Hook | stratus.loader.CommandHook
         :rtype: bool
         """
 
@@ -305,7 +305,7 @@ class PluginManager:
             hevent = HookEvent(base_event=base_event, hook=hook)
 
         if hook.type not in (HookType.on_start, HookType.on_stop):  # we don't need sieves on on_start or on_stop hooks.
-            for sieve in self.bot.plugin_manager.sieves:
+            for sieve in self.bot.loader.sieves:
                 base_event = yield from self._sieve(sieve, base_event, hevent)
                 if base_event is None:
                     return False

@@ -324,7 +324,7 @@ class IrcEvent(Event):
 
 class HookEvent:
     """
-    :type hook: stratus.plugin.Hook
+    :type hook: stratus.loader.Hook
     :type base_event: Event
     """
     __slots__ = ['hook', 'base_event']
@@ -332,7 +332,7 @@ class HookEvent:
     def __init__(self, *, hook, base_event):
         """
         :param hook: The hook object that this event will run on.
-        :type hook: stratus.plugin.Hook
+        :type hook: stratus.loader.Hook
         :type base_event: Event
         """
         self.hook = hook
@@ -348,7 +348,7 @@ class HookEvent:
 
 class CommandHookEvent(HookEvent):
     """
-    :type hook: stratus.plugin.CommandHook
+    :type hook: stratus.loader.CommandHook
     :type text: str
     :type triggered_command: str
     """
@@ -358,7 +358,7 @@ class CommandHookEvent(HookEvent):
         """
         :param text: The arguments for the command
         :param triggered_command: The command that was triggered
-        :type hook: stratus.plugin.CommandHook
+        :type hook: stratus.loader.CommandHook
         :type text: str
         :type triggered_command: str
         """
@@ -386,7 +386,7 @@ class CommandHookEvent(HookEvent):
 
 class RegexHookEvent(HookEvent):
     """
-    :type hook: stratus.plugin.RegexHook
+    :type hook: stratus.loader.RegexHook
     :type match: re.__Match
     """
     __slots__ = ['match']

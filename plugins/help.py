@@ -27,8 +27,8 @@ def help_command(text, conn, bot, notice, has_permission):
         searching_for = None
 
     if searching_for:
-        if searching_for in bot.plugin_manager.commands:
-            doc = bot.plugin_manager.commands[searching_for].doc
+        if searching_for in bot.loader.commands:
+            doc = bot.loader.commands[searching_for].doc
             if doc:
                 message = "{}{} {}".format(conn.config["command_prefix"], searching_for, doc)
                 notice(message)
@@ -45,7 +45,7 @@ def help_command(text, conn, bot, notice, has_permission):
         # current line length, to count how long the current line will be when joined with " "
         current_line_length = 0
 
-        for plugin in sorted(set(bot.plugin_manager.commands.values()), key=attrgetter("name")):
+        for plugin in sorted(set(bot.loader.commands.values()), key=attrgetter("name")):
             # use set to remove duplicate commands (from multiple aliases), and sorted to sort by name
 
             if plugin.permissions:

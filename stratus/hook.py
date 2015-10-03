@@ -1,12 +1,12 @@
 import re
 
 from stratus.event import EventType
-from stratus.plugin import HookType
+from stratus.loader import HookType
 
 valid_command_re = re.compile(r"^[\w_-]+$")
 
 
-class _DecoratorClass():
+class _DecoratorClass:
     """
     :type function: callable
     """

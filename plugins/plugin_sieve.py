@@ -1,7 +1,7 @@
 import asyncio
 
 from stratus import hook
-from stratus.plugin import HookType
+from stratus.loader import HookType
 from stratus.util import bucket
 
 plugin_info = {

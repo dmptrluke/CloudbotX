@@ -8,7 +8,7 @@ import redis
 
 from stratus.connection import Connection
 from stratus.config import Config
-from stratus.plugin import PluginManager
+from stratus.loader import Loader
 from stratus.event import Event, CommandHookEvent, RegexHookEvent, EventType
 from stratus.clients.irc import IrcConnection
 
@@ -29,7 +29,7 @@ class Stratus:
     :type running: bool
     :type connections: list[Connection | IrcConnection]
     :type config: core.config.Config
-    :type plugin_manager: PluginManager
+    :type loader: Loader
     :type db: redis.StrictRedis
     :type loop: asyncio.events.AbstractEventLoop
     :type stopped_future: asyncio.Future
@@ -66,7 +66,7 @@ class Stratus:
         # create bot connections
         self.create_connections()
 
-        self.plugin_manager = PluginManager(self)
+        self.loader = Loader(self)
 
     def run(self):
         """
@@ -117,7 +117,7 @@ class Stratus:
                 continue
             connection.close()
 
-        yield from self.plugin_manager.run_shutdown_hooks()
+        yield from self.loader.run_shutdown_hooks()
 
         self.running = False
         # Give the stopped_future a result, so that run() will exit
@@ -131,7 +131,7 @@ class Stratus:
     @asyncio.coroutine
     def _init_routine(self):
         # Load plugins
-        yield from self.plugin_manager.load_all(self.config.get("plugin_directories", ["plugins"]))
+        yield from self.loader.load_all(self.config.get("plugin_directories", ["plugins"]))
 
         # If we we're stopped while loading plugins, cancel that and just stop
         if not self.running:
@@ -155,25 +155,25 @@ class Stratus:
 
         if hasattr(event, 'irc_command'):
             # Raw IRC hook
-            for raw_hook in self.plugin_manager.catch_all_triggers:
+            for raw_hook in self.loader.catch_all_triggers:
                 if raw_hook.run_first:
-                    first.append(self.plugin_manager.launch(raw_hook, event))
+                    first.append(self.loader.launch(raw_hook, event))
                 else:
-                    tasks.append(self.plugin_manager.launch(raw_hook, event))
-            if event.irc_command in self.plugin_manager.raw_triggers:
-                for raw_hook in self.plugin_manager.raw_triggers[event.irc_command]:
+                    tasks.append(self.loader.launch(raw_hook, event))
+            if event.irc_command in self.loader.raw_triggers:
+                for raw_hook in self.loader.raw_triggers[event.irc_command]:
                     if raw_hook.run_first:
-                        first.append(self.plugin_manager.launch(raw_hook, event))
+                        first.append(self.loader.launch(raw_hook, event))
                     else:
-                        tasks.append(self.plugin_manager.launch(raw_hook, event))
+                        tasks.append(self.loader.launch(raw_hook, event))
 
         # Event hooks
-        if event.type in self.plugin_manager.event_type_hooks:
-            for event_hook in self.plugin_manager.event_type_hooks[event.type]:
+        if event.type in self.loader.event_type_hooks:
+            for event_hook in self.loader.event_type_hooks[event.type]:
                 if event_hook.run_first:
-                    first.append(self.plugin_manager.launch(event_hook, event))
+                    first.append(self.loader.launch(event_hook, event))
                 else:
-                    tasks.append(self.plugin_manager.launch(event_hook, event))
+                    tasks.append(self.loader.launch(event_hook, event))
 
         if event.type is EventType.message:
             # Commands
@@ -188,24 +188,24 @@ class Stratus:
 
             if match:
                 command = match.group(1).lower()
-                if command in self.plugin_manager.commands:
-                    command_hook = self.plugin_manager.commands[command]
+                if command in self.loader.commands:
+                    command_hook = self.loader.commands[command]
                     command_event = CommandHookEvent(hook=command_hook, text=match.group(2).strip(),
                                                      triggered_command=command, base_event=event)
                     if command_hook.run_first:
-                        first.append(self.plugin_manager.launch(command_hook, event, command_event))
+                        first.append(self.loader.launch(command_hook, event, command_event))
                     else:
-                        tasks.append(self.plugin_manager.launch(command_hook, event, command_event))
+                        tasks.append(self.loader.launch(command_hook, event, command_event))
 
             # Regex hooks
-            for regex, regex_hook in self.plugin_manager.regex_hooks:
+            for regex, regex_hook in self.loader.regex_hooks:
                 match = regex.search(event.content)
                 if match:
                     regex_event = RegexHookEvent(hook=regex_hook, match=match, base_event=event)
                     if regex_hook.run_first:
-                        first.append(self.plugin_manager.launch(regex_hook, event, regex_event))
+                        first.append(self.loader.launch(regex_hook, event, regex_event))
                     else:
-                        tasks.append(self.plugin_manager.launch(regex_hook, event, regex_event))
+                        tasks.append(self.loader.launch(regex_hook, event, regex_event))
 
         # Run the tasks
         yield from asyncio.gather(*first, loop=self.loop)

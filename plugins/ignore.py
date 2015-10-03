@@ -3,7 +3,7 @@ from fnmatch import fnmatch
 import logging
 
 from stratus import hook
-from stratus.plugin import HookType
+from stratus.loader import HookType
 
 plugin_info = {
     "plugin_category": "core",
