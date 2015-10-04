@@ -1,8 +1,8 @@
 import asyncio
 
-from stratus import hook
-from stratus.loader import HookType
-from stratus.util import bucket
+from stratus.plugins import hook
+from stratus.plugins.loader import HookType
+from stratus.helpers import bucket
 
 plugin_info = {
     "plugin_category": "core"

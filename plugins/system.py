@@ -1,12 +1,12 @@
 import os
-import time
 import platform
+import time
 from datetime import timedelta
 
 import psutil
 
-from stratus import hook
 import stratus
+from stratus.plugins import hook
 
 plugin_info = {
     "plugin_category": "obr",

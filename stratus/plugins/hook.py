@@ -1,7 +1,7 @@
 import re
 
 from stratus.event import EventType
-from stratus.loader import HookType
+from stratus.plugins.loader import HookType
 
 valid_command_re = re.compile(r"^[\w_-]+$")
 

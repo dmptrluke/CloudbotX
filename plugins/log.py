@@ -1,14 +1,14 @@
 import asyncio
+import codecs
+import itertools
 import logging
 import os
-import codecs
-import time
 import re
-import itertools
+import time
 
 import stratus
-from stratus import hook
 from stratus.event import EventType
+from stratus.plugins import hook
 
 plugin_info = {
     "plugin_category": "core"

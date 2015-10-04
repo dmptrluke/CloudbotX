@@ -1,16 +1,15 @@
 import asyncio
-import time
+import gc
 import logging
 import re
-import gc
+import time
 
 import redis
 
-from stratus.connection import Connection
-from stratus.config import Config
-from stratus.loader import Loader
 from stratus.event import Event, CommandHookEvent, RegexHookEvent, EventType
-from stratus.clients.irc import IrcConnection
+from stratus.helpers.config import Config
+from stratus.irc.client import IRCClient
+from stratus.plugins.loader import Loader
 
 logger = logging.getLogger("bot")
 
@@ -27,7 +26,7 @@ class Stratus:
     """
     :type start_time: float
     :type running: bool
-    :type connections: list[Connection | IrcConnection]
+    :type connections: list[Server | IrcConnection]
     :type config: core.config.Config
     :type loader: Loader
     :type db: redis.StrictRedis
@@ -91,9 +90,9 @@ class Stratus:
             server = config['connection']['server']
             port = config['connection'].get('port', 6667)
 
-            self.connections.append(IrcConnection(self, name, nick, config=config,
-                                                  server=server, port=port,
-                                                  use_ssl=config['connection'].get('ssl', False)))
+            self.connections.append(IRCClient(self, name, nick, config=config,
+                                              server=server, port=port,
+                                              use_ssl=config['connection'].get('ssl', False)))
             logger.debug("[{}] Created connection.".format(name))
 
     @asyncio.coroutine

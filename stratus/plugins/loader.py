@@ -14,6 +14,9 @@ logger = logging.getLogger("stratus")
 
 
 class HookType(enum.Enum):
+    """
+
+    """
     on_start = 1,
     on_stop = 2,
     sieve = 3,
@@ -25,8 +28,12 @@ class HookType(enum.Enum):
 
 def find_plugins(plugin_directories):
     """
-    :type plugin_directories: collections.Iterable[str]
-    :rtype: collections.Iterable[str]
+
+    Args:
+        plugin_directories: A list of
+
+    Returns:
+
     """
     for directory_pattern in plugin_directories:
         for directory in glob.iglob(directory_pattern):

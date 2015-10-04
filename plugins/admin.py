@@ -1,7 +1,7 @@
 import asyncio
 import re
 
-from stratus import hook
+from stratus.plugins import hook
 
 plugin_info = {
     "plugin_category": "core",
