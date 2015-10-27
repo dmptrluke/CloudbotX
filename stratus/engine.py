@@ -35,9 +35,9 @@ class Stratus:
     :param: stopped_future: Future that will be given a result when the bot has stopped.
     """
 
-    def __init__(self, loop=asyncio.get_event_loop()):
+    def __init__(self):
         # basic variables
-        self.loop = loop
+        self.loop = asyncio.get_event_loop()
         self.start_time = time.time()
         self.running = True
         # future which will be called when the bot stops
@@ -77,9 +77,8 @@ class Stratus:
         # Initializes the bot, plugins and connections
         self.loop.run_until_complete(self._init_routine())
         # Wait till the bot stops. The stopped_future will be set to True to restart, False otherwise
-        restart = self.loop.run_until_complete(self.stopped_future)
+        self.loop.run_until_complete(self.stopped_future)
         self.loop.close()
-        return restart
 
     def create_connections(self):
         """ Create a BotConnection for all the networks defined in the config """
@@ -95,42 +94,33 @@ class Stratus:
                                               use_ssl=config['connection'].get('ssl', False)))
             logger.debug("[{}] Created connection.".format(name))
 
-    @asyncio.coroutine
-    def stop(self, reason=None, *, restart=False):
+    async def stop(self, reason=None):
         """quits all networks and shuts the bot down"""
         logger.info("Stopping.")
 
         for connection in self.connections:
             if not connection.connected:
-                # Don't quit a connection that hasn't connected
                 continue
+
             logger.debug("[{}] Closing connection.".format(connection.name))
 
             connection.quit(reason)
 
-        yield from asyncio.sleep(0.5)  # wait for 'QUIT' calls to take affect
+        await asyncio.sleep(0.5)  # wait for 'QUIT' calls to take affect
 
         for connection in self.connections:
             if not connection.connected:
-                # Don't close a connection that hasn't connected
                 continue
+
             connection.close()
 
-        yield from self.loader.run_shutdown_hooks()
-
+        await self.loader.run_shutdown_hooks()
         self.running = False
-        # Give the stopped_future a result, so that run() will exit
-        self.stopped_future.set_result(restart)
+        self.stopped_future.set_result(1)
 
-    @asyncio.coroutine
-    def restart(self, reason=None):
-        """shuts the bot down and restarts it"""
-        yield from self.stop(reason=reason, restart=True)
-
-    @asyncio.coroutine
-    def _init_routine(self):
+    async def _init_routine(self):
         # Load plugins
-        yield from self.loader.load_all(self.config.get("plugin_directories", ["plugins"]))
+        await self.loader.load_all(self.config.get("plugin_directories", ["plugins"]))
 
         # If we we're stopped while loading plugins, cancel that and just stop
         if not self.running:
@@ -138,13 +128,12 @@ class Stratus:
             return
 
         # Connect to servers
-        yield from asyncio.gather(*[conn.connect() for conn in self.connections], loop=self.loop)
+        await asyncio.gather(*[conn.connect() for conn in self.connections], loop=self.loop)
 
         # Run a manual garbage collection cycle, to clean up any unused objects created during initialization
         gc.collect()
 
-    @asyncio.coroutine
-    def process(self, event):
+    async def process(self, event):
         """
         :type event: Event
         """
@@ -207,5 +196,5 @@ class Stratus:
                         tasks.append(self.loader.launch(regex_hook, event, regex_event))
 
         # Run the tasks
-        yield from asyncio.gather(*first, loop=self.loop)
-        yield from asyncio.gather(*tasks, loop=self.loop)
+        await asyncio.gather(*first, loop=self.loop)
+        await asyncio.gather(*tasks, loop=self.loop)

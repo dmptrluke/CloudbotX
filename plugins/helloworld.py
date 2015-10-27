@@ -5,3 +5,6 @@ from stratus.plugins import hook
 def hello():
     return "Hello World!"
 
+@hook.command()
+def test(user):
+    return user
