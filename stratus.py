@@ -1,6 +1,7 @@
 import asyncio
 import logging
 import os
+import json
 import sys
 import signal
 
@@ -23,8 +24,12 @@ def main():
 
     logger.info("Starting stratus.".format())
 
+    # temporary config shit
+    with open("config.json") as f:
+        config = json.load(f)
+
     # create the bot
-    bot = Stratus()
+    bot = Stratus(config)
 
     # store the original SIGINT handler
     original_sigint = signal.getsignal(signal.SIGINT)

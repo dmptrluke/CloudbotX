@@ -2,7 +2,7 @@ import asyncio
 import re
 from operator import attrgetter
 
-from stratus.plugins import hook
+from stratus.loader import hook
 
 plugin_info = {
     "plugin_category": "core",

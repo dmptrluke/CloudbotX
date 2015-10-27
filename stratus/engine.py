@@ -7,9 +7,8 @@ import time
 import redis
 
 from stratus.event import Event, CommandHookEvent, RegexHookEvent, EventType
-from stratus.helpers.config import Config
 from stratus.irc.client import IRCClient
-from stratus.plugins.loader import Loader
+from stratus.loader.pluginloader import Loader
 
 logger = logging.getLogger("bot")
 
@@ -35,7 +34,7 @@ class Stratus:
     :param: stopped_future: Future that will be given a result when the bot has stopped.
     """
 
-    def __init__(self):
+    def __init__(self, config):
         # basic variables
         self.loop = asyncio.get_event_loop()
         self.start_time = time.time()
@@ -47,7 +46,7 @@ class Stratus:
         self.connections = []
 
         # set up config
-        self.config = Config(self)
+        self.config = config
         logger.debug("Config system initialised.")
 
         # setup db

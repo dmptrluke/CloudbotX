@@ -8,7 +8,7 @@ import time
 
 import stratus
 from stratus.event import EventType
-from stratus.plugins import hook
+from stratus.loader import hook
 
 plugin_info = {
     "plugin_category": "core"

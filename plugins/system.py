@@ -6,7 +6,7 @@ from datetime import timedelta
 import psutil
 
 import stratus
-from stratus.plugins import hook
+from stratus.loader import hook
 
 plugin_info = {
     "plugin_category": "obr",

@@ -2,7 +2,7 @@ import asyncio
 import time
 
 import stratus
-from stratus.plugins import hook
+from stratus.loader import hook
 
 plugin_info = {
     "plugin_category": "core"

@@ -2,8 +2,8 @@ import asyncio
 import logging
 from fnmatch import fnmatch
 
-from stratus.plugins import hook
-from stratus.plugins.loader import HookType
+from stratus.loader import hook
+from stratus.loader.pluginloader import HookType
 
 plugin_info = {
     "plugin_category": "core",

@@ -1,4 +1,4 @@
-from stratus.plugins import hook
+from stratus.loader import hook
 
 
 @hook.command()
