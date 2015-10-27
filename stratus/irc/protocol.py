@@ -205,10 +205,4 @@ class IRCProtocol(asyncio.Protocol):
             event = IrcEvent(bot=self.bot, conn=self.conn, event_type=event_type, content=content, target=target,
                              channel_name=channel, nick=nick, user=user, host=host, mask=mask, irc_raw=line,
                              irc_command=command, irc_command_params=command_params, irc_ctcp_text=ctcp_text)
-            asyncio.ensure_future(self.process(event))
-
-    @asyncio.coroutine
-    def process(self, event):
-        # handle the message, async
-        yield from self.conn.pre_process_event(event)
-        asyncio.ensure_future(self.bot.process(event), loop=self.loop)
+            asyncio.ensure_future(self.conn.process(event))

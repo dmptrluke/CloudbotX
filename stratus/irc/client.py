@@ -210,36 +210,6 @@ class IRCClient:
     def connected(self):
         return self._connected
 
-    @asyncio.coroutine
-    def pre_process_event(self, event):
-        yield from super().pre_process_event(event)
-        if event.type is not EventType.message:
-            return
-        finished = []
-        for (nick, chan, regex), futures in self.waiting_messages.items():
-            if all(future.done() for future in futures):
-                finished.append((nick, chan, regex))
-                continue
-            if nick is not None and event.nick.lower() != nick:
-                continue
-            if chan is not None and event.chan_name.lower() != chan:
-                continue
-
-            try:
-                match = regex.search(event.content)
-            except Exception as exc:
-                for future in futures:
-                    future.set_exception(exc)
-                finished.append((nick, chan, regex))
-            else:
-                if match:
-                    for future in futures:
-                        future.set_result(match)
-                    finished.append((nick, chan, regex))
-
-        for key in finished:
-            del self.waiting_messages[key]
-
     def wait_for(self, message, nick=None, chan=None):
         """
         Waits for a message matching a specific regex
@@ -264,8 +234,7 @@ class IRCClient:
         self.waiting_messages[key] = [future]
         return future
 
-    @asyncio.coroutine
-    def cancel_wait(self, message, nick=None, chan=None):
+    async def cancel_wait(self, message, nick=None, chan=None):
         if nick is not None:
             nick = nick.lower()
         if chan is not None:
@@ -275,8 +244,41 @@ class IRCClient:
             if test_nick == nick and test_chan == chan and test_message == message:
                 future.cancel()
 
-    @asyncio.coroutine
-    def _process_channel(self, event):
+    async def process(self, event):
+        await self._process_channel(event)
+        await self._process_nick(event)
+        await self._process_quit(event)
+        await self._process_wait(event)
+        await self.bot.process(event)
+
+    async def _process_wait(self, event):
+        if event.type is EventType.message:
+            finished = []
+            for (nick, chan, regex), futures in self.waiting_messages.items():
+                if all(future.done() for future in futures):
+                    finished.append((nick, chan, regex))
+                    continue
+                if nick is not None and event.nick.lower() != nick:
+                    continue
+                if chan is not None and event.chan_name.lower() != chan:
+                    continue
+
+                try:
+                    match = regex.search(event.content)
+                except Exception as exc:
+                    for future in futures:
+                        future.set_exception(exc)
+                    finished.append((nick, chan, regex))
+                else:
+                    if match:
+                        for future in futures:
+                            future.set_result(match)
+                        finished.append((nick, chan, regex))
+
+            for key in finished:
+                del self.waiting_messages[key]
+
+    async def _process_channel(self, event):
         if event.chan_name is None or event.chan_name.lower() == event.nick.lower():
             return  # the rest of this just process on channels
 
@@ -304,22 +306,21 @@ class IRCClient:
                 return
 
         if event.type is EventType.message:
-            yield from channel.track_message(event)
+            await channel.track_message(event)
         elif event.type is EventType.join:
-            yield from channel.track_join(event)
+            await channel.track_join(event)
         elif event.type is EventType.part:
-            yield from channel.track_part(event)
+            await channel.track_part(event)
         elif event.type is EventType.kick:
-            yield from channel.track_kick(event)
+            await channel.track_kick(event)
         elif event.type is EventType.topic:
-            yield from channel.track_topic(event)
+            await channel.track_topic(event)
         elif event.irc_command == 'MODE':
             channel.track_mode(event)
         elif event.irc_command == '353':
             channel.track_353_channel_list(event)
 
-    @asyncio.coroutine
-    def _process_nick(self, event):
+    async def _process_nick(self, event):
         if event.type is not EventType.nick:
             return
 
@@ -330,11 +331,10 @@ class IRCClient:
         event.channels.clear()  # We will re-set all relevant channels below
         for channel in self.channels.values():
             if event.nick in channel.users:
-                yield from channel.track_nick(event)
+                await channel.track_nick(event)
                 event.channels.append(channel)
 
-    @asyncio.coroutine
-    def _process_quit(self, event):
+    async def _process_quit(self, event):
         if event.type is not EventType.quit:
             return
 
@@ -343,10 +343,3 @@ class IRCClient:
             if event.nick in channel.users:
                 channel.track_quit(event)
                 event.channels.append(channel)
-
-    @asyncio.coroutine
-    def pre_process_event(self, event):
-
-        yield from self._process_channel(event)
-        yield from self._process_nick(event)
-        yield from self._process_quit(event)
