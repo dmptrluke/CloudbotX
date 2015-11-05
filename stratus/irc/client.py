@@ -134,7 +134,10 @@ class IRCClient:
         self._connected = False
 
     def message(self, target, *messages, log_hide=None):
+        bad_chars = ["\n","\r"]
         for text in messages:
+            for char in bad_chars:
+                text = text.replace(char,"")
             self.cmd("PRIVMSG", target, text, log_hide=log_hide)
 
     def action(self, target, text, log_hide=None):
@@ -169,6 +172,9 @@ class IRCClient:
         :type target: str
         """
         out = "\x01{} {}\x01".format(ctcp_type, text)
+        bad_chars = ["\n","\r"]
+        for char in bad_chars:
+            out = out.replace(char,"")
         self.cmd("PRIVMSG", target, out, log_hide=log_hide)
 
     def cmd(self, command, *params, log_hide=None):
