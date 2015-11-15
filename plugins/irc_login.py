@@ -11,7 +11,7 @@ logger = logging.getLogger('stratus')
 
 # Identify to NickServ (or other service)
 @asyncio.coroutine
-@hook.irc_raw('004')
+@hook.irc_raw('RPL_MYINFO')
 def onjoin(conn):
     """
     :type conn: stratus.clients.irc.IrcConnection
@@ -48,7 +48,7 @@ def onjoin(conn):
 
 
 @asyncio.coroutine
-@hook.irc_raw('004')
+@hook.irc_raw('RPL_MYINFO')
 def keep_alive(conn):
     """
     :type conn: stratus.clients.irc.IrcConnection

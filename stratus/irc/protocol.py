@@ -1,8 +1,11 @@
 import asyncio
 import logging
+
+import traceback
 import re
 
 from stratus.event import Event, EventType, IrcEvent
+from stratus.irc.message import IRCMessage
 
 logger = logging.getLogger("stratus")
 
@@ -92,117 +95,107 @@ class IRCProtocol(asyncio.Protocol):
         self._input_buffer += data
 
         while b"\r\n" in self._input_buffer:
-            line_data, self._input_buffer = self._input_buffer.split(b"\r\n", 1)
-            line = line_data.decode()
+            try:
+                # fetch and decode line
+                line_data, self._input_buffer = self._input_buffer.split(b"\r\n", 1)
+                line = line_data.decode()
 
-            # parse the line into a message
-            if line.startswith(":"):
-                prefix_line_match = irc_prefix_re.match(line)
-                if prefix_line_match is None:
-                    logger.critical("[{}] Received invalid IRC line '{}' from {}".format(
-                        self.conn.name, line, self.conn.describe_server()))
-                    continue
+                # parse line with IRCMessage
+                message = IRCMessage.parse(line)
 
-                netmask_prefix, command, params = prefix_line_match.groups()
-                netmask_match = irc_netmask_re.match(netmask_prefix)
-                if netmask_match is None:
-                    # This isn't in the format of a netmask
-                    nick = netmask_prefix
+                # parse and expand prefix
+                if message.prefix:
+                    # check if we have a netmask
+                    netmask_match = irc_netmask_re.match(message.prefix)
+                    if netmask_match is None:
+                        nick = message.prefix
+                        user = None
+                        host = None
+                        mask = message.prefix
+                    else:
+                        nick = netmask_match.group(1)
+                        user = netmask_match.group(2)
+                        host = netmask_match.group(3)
+                        mask = message.prefix
+                else:
+                    # no prefix
+                    nick = None
                     user = None
                     host = None
-                    mask = netmask_prefix
+                    mask = None
+
+                # reply to ping messages right away
+                if message.command == "PING":
+                    asyncio.ensure_future(self.send("PONG " + message.args[-1]), loop=self.loop)
+
+                # Parse the command and params
+
+                # Event type
+                if message.command in irc_command_to_event_type:
+                    event_type = irc_command_to_event_type[message.command]
                 else:
-                    nick = netmask_match.group(1)
-                    user = netmask_match.group(2)
-                    host = netmask_match.group(3)
-                    mask = netmask_prefix
-            else:
-                noprefix_line_match = irc_noprefix_re.match(line)
-                if noprefix_line_match is None:
-                    logger.critical("[{}] Received invalid IRC line '{}' from {}".format(
-                        self.conn.name, line, self.conn.describe_server()))
-                    continue
-                command = noprefix_line_match.group(1)
-                params = noprefix_line_match.group(2)
-                nick = None
-                user = None
-                host = None
-                mask = None
-
-            command_params = irc_param_re.findall(params)
-
-            # Reply to pings immediately
-
-            if command == "PING":
-                asyncio.ensure_future(self.send("PONG " + command_params[-1]), loop=self.loop)
-
-            # Parse the command and params
-
-            # Event type
-            if command in irc_command_to_event_type:
-                event_type = irc_command_to_event_type[command]
-            else:
-                event_type = EventType.other
-
-            # Content
-            if command_params and command_params[-1].startswith(":"):
-                # If the last param is in the format of `:content` remove the `:` from it, and set content from it
-                content = command_params[-1][1:]
-            elif event_type is EventType.nick:
-                content = command_params[0]
-            else:
-                content = None
-
-
-            # Parse for CTCP
-            if event_type is EventType.message and content.count("\x01") >= 2 and content.startswith("\x01"):
-                # Remove the first \x01, then rsplit to remove the last one, and ignore text after the last \x01
-                ctcp_text = str(content[1:].rsplit("\x01", 1)[0])  # str() to make python happy - not strictly needed
-                ctcp_text_split = ctcp_text.split(None, 1)
-                if ctcp_text_split[0] == "ACTION":
-                    # this is a CTCP ACTION, set event_type and content accordingly
-                    event_type = EventType.action
-                    content = ctcp_text_split[1]
-                else:
-                    # this shouldn't be considered a regular message
                     event_type = EventType.other
-            else:
-                ctcp_text = None
 
-            # Channel
-            if command == "353":
-                # 353 format is `:network.name 353 bot_nick = #channel :user1 user2`, if we just used the below,
-                # we would think the channel was the bot_nick
-                channel = command_params[2].lower()
-            elif (command_params and (len(command_params) > 2 or not command_params[0].startswith(":"))
-                  and event_type is not EventType.nick):
-
-                if command_params[0].lower() == self.conn.bot_nick.lower():
-                    # this is a private message - set the channel to the sender's nick
-                    channel = nick.lower()
+                # Content
+                if message.args:
+                    content = message.args[-1]
+                elif event_type is EventType.nick:
+                    content = message.args[0]
                 else:
-                    channel = command_params[0].lower()
-            elif command == "JOIN":
-                channel = content
-            else:
-                channel = None
+                    content = None
 
-            # Target (for KICK, INVITE)
-            if event_type is EventType.kick:
-                target = command_params[1]
-            elif command == "INVITE":
-                target = command_params[0]
-            elif command == "MODE":
-                if len(command_params) > 2:
-                    target = command_params[2]
+
+                # Parse for CTCP
+                if event_type is EventType.message and content.count("\x01") >= 2 and content.startswith("\x01"):
+                    # Remove the first \x01, then rsplit to remove the last one, and ignore text after the last \x01
+                    ctcp_text = str(content[1:].rsplit("\x01", 1)[0])  # str() to make python happy - not strictly needed
+                    ctcp_text_split = ctcp_text.split(None, 1)
+                    if ctcp_text_split[0] == "ACTION":
+                        # this is a CTCP ACTION, set event_type and content accordingly
+                        event_type = EventType.action
+                        content = ctcp_text_split[1]
+                    else:
+                        # this shouldn't be considered a regular message
+                        event_type = EventType.other
                 else:
-                    target = command_params[0]
+                    ctcp_text = None
+
+                # Channel
+                if message.command == "RPL_NAMREPLY":
+                    # 353 format is `:network.name 353 bot_nick = #channel :user1 user2`, if we just used the below,
+                    # we would think the channel was the bot_nick
+                    channel = message.args[2].lower()
+                elif (message.args and (len(message.args) > 2 or not message.args[0].startswith(":"))
+                      and event_type is not EventType.nick):
+
+                    if message.args[0].lower() == self.conn.bot_nick.lower():
+                        # this is a private message - set the channel to the sender's nick
+                        channel = nick.lower()
+                    else:
+                        channel = message.args[0].lower()
+                elif message.command == "JOIN":
+                    channel = content
+                else:
                     channel = None
-            else:
-                target = None
 
-            # Set up parsed message
-            event = IrcEvent(bot=self.bot, conn=self.conn, event_type=event_type, content=content, target=target,
-                             channel_name=channel, nick=nick, user=user, host=host, mask=mask, irc_raw=line,
-                             irc_command=command, irc_command_params=command_params, irc_ctcp_text=ctcp_text)
-            asyncio.ensure_future(self.conn.process(event))
+                # Target (for KICK, INVITE)
+                if event_type is EventType.kick:
+                    target = message.args[1]
+                elif message.command == "INVITE":
+                    target = message.args[0]
+                elif message.command == "MODE":
+                    if len(message.args) > 2:
+                        target = message.args[2]
+                    else:
+                        target = message.args[0]
+                        channel = None
+                else:
+                    target = None
+
+                # Set up parsed message
+                event = IrcEvent(bot=self.bot, conn=self.conn, event_type=event_type, content=content, target=target,
+                                 channel_name=channel, nick=nick, user=user, host=host, mask=mask, irc_raw=line,
+                                 irc_command=message.command, irc_command_params=message.args, irc_ctcp_text=ctcp_text)
+                asyncio.ensure_future(self.conn.process(event))
+            except:
+                traceback.print_exc()
